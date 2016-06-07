@@ -34,6 +34,7 @@ class _DBToolBase(object):
     config = None
     dry_run = False
     debug = False
+    deep = False
     interactive = True
 
     def __init__(self, config_filename):

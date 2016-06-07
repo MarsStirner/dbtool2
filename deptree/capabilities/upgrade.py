@@ -24,7 +24,7 @@ class _DBToolUpgrader(_DBToolBase):
         for target in targets:
             try:
                 node = DBToolBaseNode.get(target)
-                sequence = node.resolve(*stops)
+                sequence = node.resolve(*stops, deep=self.deep)
                 result.extend(sequence)
                 stops.extend(sequence)
             except DependencyNotFound, e:

@@ -17,6 +17,8 @@ if __name__ == "__main__":
                         help='Make it very verbose')
     parser.add_argument('--dry-run', action='store_const', const=True, default=False,
                         help='Do not actually perform any actions')
+    parser.add_argument('--deep', action='store_const', const=True, default=False,
+                        help='Process dependencies even if update is salready installed')
     subparsers = parser.add_subparsers(title=u'Команды', help=u'Доступные команды')
 
     sp_upgrade = subparsers.add_parser('upgrade', help=u'Выполнить установку обновлений БД')
@@ -45,6 +47,7 @@ if __name__ == "__main__":
     db_tool = DBTool(args.config)
     db_tool.dry_run = args.dry_run
     db_tool.debug = args.debug
+    db_tool.deep = args.deep
     logger = logging.getLogger('dbtool')
 
     if args.debug:

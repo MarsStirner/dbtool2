@@ -97,7 +97,10 @@ class NodeMeta(type):
         result.reverse()
         return result
 
-    def resolve(cls, *stops):
+    def resolve(cls, *stops, **kwargs):
+        deep = kwargs.pop('deep', False)
+        if kwargs:
+            raise RuntimeError(u'Unknown parameters %s' % u', '.join(kwargs))
         stops = set(stops)
         result = []
         stack = []
@@ -105,7 +108,7 @@ class NodeMeta(type):
         def resolve_aux(node_name):
             if node_name in stack:
                 raise CircularDependency(node_name, stack)
-            if node_name in stops:
+            if node_name in stops and not deep:
                 return
             if node_name in result:
                 return
@@ -119,7 +122,7 @@ class NodeMeta(type):
             for name in kls.depends:
                 resolve_aux(name)
 
-            if node_name not in result:
+            if node_name not in result and node_name not in stops:
                 result.append(node_name)
 
             stack.pop()
