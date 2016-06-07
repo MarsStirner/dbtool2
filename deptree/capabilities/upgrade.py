@@ -39,18 +39,18 @@ class _DBToolUpgrader(_DBToolBase):
         :param sequence: Последовательность
         :return:
         """
-        with self.connection as cursor:
-            for name in sequence:
-                node = DBToolBaseNode.get(name)
-                logger.info(u'Выполняется обновление %s', name)
-                if self.dry_run:
-                    continue
-                try:
-                    if hasattr(node, 'upgrade'):
-                        node.upgrade()
-                except MySQLdb.ProgrammingError:
-                    raise
-                else:
+        for name in sequence:
+            node = DBToolBaseNode.get(name)
+            logger.info(u'Выполняется обновление %s', name)
+            if self.dry_run:
+                continue
+            try:
+                if hasattr(node, 'upgrade'):
+                    node.upgrade()
+            except MySQLdb.ProgrammingError:
+                raise
+            else:
+                with self.connection as cursor:
                     cursor.execute('INSERT INTO InstalledDbUpdates (`name`) VALUES (%s)', (name, ))
 
     def perform_updates(self, targets):
