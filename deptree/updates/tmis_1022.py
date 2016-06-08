@@ -54,6 +54,20 @@ WHERE
 # ''')
 
 
+class ActionPlannedEndDateNULL(DBToolBaseNode):
+    name = 'tmis-1022.3'
+    depends = []
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+            logger.info(u'Позволяем записывать в Action.plannedEndDate NULL')
+            c.execute(u'''ALTER TABLE `Action` CHANGE COLUMN `plannedEndDate` `plannedEndDate` DATETIME NULL DEFAULT NULL COMMENT 'Плановая дата выполнения' AFTER `begDate`;''')
+
+            logger.info(u'Ставим по умолчанию "Сегодняшним днём" для действий с забором БМ, если у них не планируемая определена дата по умолчанию')
+            c.execute(u'''UPDATE ActionType SET ActionType.defaultPlannedEndDate = 3 WHERE ActionType.isRequiredTissue > 0 AND ActionType.defaultPlannedEndDate = 0;''')
+
+
 class TMIS_1022(DBToolBaseNode):
     name = 'tmis-1022'
-    depends = ['tmis-1022.1', 'tmis-1022.2']
+    depends = ['tmis-1022.1', 'tmis-1022.2', 'tmis-1022.3']
