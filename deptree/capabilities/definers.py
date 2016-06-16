@@ -35,7 +35,7 @@ class _DBToolDefinerChanger(_DBToolBase):
         new_definer = self.config['definer']
 
         with self.connection as c:
-            logger.info('- Обрабатываются триггеры')
+            logger.info(u'- Обрабатываются триггеры')
             c.execute(
                 'SELECT `TRIGGER_NAME`, `DEFINER` '
                 'FROM `information_schema`.`TRIGGERS` '
@@ -56,7 +56,7 @@ class _DBToolDefinerChanger(_DBToolBase):
                     'UPDATE `mysql`.`proc` SET `definer` = "%s" '
                     'WHERE `db`="%s"' % (new_definer.replace('`', ''), current_db_name))
 
-            logger.info('- Обрабатываются виды')
+            logger.info(u'- Обрабатываются виды')
             c.execute(
                 'SELECT `TABLE_NAME` '
                 'FROM `information_schema`.`TABLES` '

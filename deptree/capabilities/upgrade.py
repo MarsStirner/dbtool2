@@ -45,7 +45,7 @@ class _DBToolUpgrader(_DBToolBase):
             if self.dry_run:
                 continue
             try:
-                if hasattr(node, 'upgrade'):
+                if not self.fake and hasattr(node, 'upgrade'):
                     node.upgrade()
             except MySQLdb.ProgrammingError:
                 raise

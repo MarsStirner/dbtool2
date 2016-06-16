@@ -35,6 +35,7 @@ class _DBToolBase(object):
     dry_run = False
     debug = False
     deep = False
+    fake = False
     interactive = True
 
     def __init__(self, config_filename):
@@ -71,8 +72,8 @@ class _DBToolBase(object):
                 cursor.execute('SELECT `name` FROM `InstalledDbUpdates`')
                 self.installed_updates = [name for (name,) in cursor]
         except MySQLdb.ProgrammingError:
-            logger.error("В базе данных не найдена таблица `InstalledDbUpdates`. "
-                         "БД не готова к миграциям dbTool2.")
+            logger.error(u"В базе данных не найдена таблица `InstalledDbUpdates`. "
+                         u"БД не готова к миграциям dbTool2.")
         DBToolBaseNode.connection = self.connection
         DBToolBaseNode.config = self.config
 
@@ -107,6 +108,7 @@ def db_transactional(func):
         try:
             result = func(self, *args, **kwargs)
         except:
+            logger.exception('perform update exc')
             if self.connection:
                 self.connection.rollback()
             raise

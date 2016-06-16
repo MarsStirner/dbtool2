@@ -24,6 +24,8 @@ if __name__ == "__main__":
                             help='Устанавливаемые обновления')
     sp_upgrade.add_argument('--deep', action='store_const', const=True, default=False,
                             help='Process dependencies even if update is already installed')
+    sp_upgrade.add_argument('--fake', action='store_const', const=True, default=False,
+                            help='Don\'t execute modules updates, only record version change. Use with caution!')
     sp_upgrade.set_defaults(mode='upgrade')
 
     # sp_downgrade = subparsers.add_parser('downgrade', help=u'Выполнить удаление обновлений БД')
@@ -41,12 +43,16 @@ if __name__ == "__main__":
     sp_depers = subparsers.add_parser('depersonalize', help=u'Деперсонализировать БД')
     sp_depers.set_defaults(mode='depersonalize')
 
+    sp_initdb = subparsers.add_parser('initdb', help=u'Подготовить БД для работы с dbtool2')
+    sp_initdb.set_defaults(mode='initdb')
+
     args = parser.parse_args(sys.argv[1:])
 
     db_tool = DBTool(args.config)
     db_tool.dry_run = args.dry_run
     db_tool.debug = args.debug
     db_tool.deep = getattr(args, 'deep', False)
+    db_tool.fake = getattr(args, 'fake', False)
     logger = logging.getLogger('dbtool')
 
     if args.debug:
@@ -64,6 +70,8 @@ if __name__ == "__main__":
                 db_tool.user_rls_import(args.path)
             elif args.mode == 'depersonalize':
                 db_tool.perform_depersonalize()
+            elif args.mode == 'initdb':
+                db_tool.init_db()
     except:
         logger.exception('Whoops...')
 
