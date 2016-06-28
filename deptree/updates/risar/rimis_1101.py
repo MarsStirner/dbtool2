@@ -35,7 +35,7 @@ ADD COLUMN `modifyDatetime` DATETIME NOT NULL AFTER `createDatetime`;
 
             c.execute(u'''
 ALTER TABLE `FileMeta`
-ADD COLUMN `uuid` `uuid` BINARY(16) NULL DEFAULT NULL COMMENT 'UUID' ,
+ADD COLUMN `uuid` BINARY(16) NULL DEFAULT NULL COMMENT 'UUID' ,
 ADD COLUMN `extension` VARCHAR(32) NULL DEFAULT NULL COMMENT 'Изначальное расширение файла' AFTER `name`,
 ADD UNIQUE INDEX `uuid_UNIQUE` (`uuid` ASC);
 ''')
