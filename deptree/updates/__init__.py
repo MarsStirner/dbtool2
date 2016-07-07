@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import (
-    zero_updates, rimis_1056, tmis_1022,
+    zero_updates, rimis_1056, tmis_1022, tmis_1173,
     common,
     risar
 )
