@@ -1,6 +1,3 @@
 # coding: utf-8
 
-from . import initial
-from . import radzinsky_risks
-from . import rimis_1076
-from . import rimis_1101
+from . import initial, radzinsky_risks, rimis_1076, rimis_1101, rimis_1241
