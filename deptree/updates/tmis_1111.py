@@ -40,7 +40,6 @@ class ServiceTotalSumMigration(DBToolBaseNode):
             c.execute(u'select count(*) from Service where parent_id is null;')
             num_of_services = c.fetchone()[0]
             logger.info(u'Количество корневых услуг: {0}'.format(num_of_services))
-            logger.info('Num of services %s' % num_of_services)
             num_of_iterations = int(math.ceil(float(num_of_services) / offset))
             for i in xrange(num_of_iterations):
                 c.execute(u'''
