@@ -56,7 +56,7 @@ class _DBToolDowngrader(_DBToolBase):
         sequence = DBToolBaseNode.dependents(real_targets, self.installed_updates)
         logger.info(u'Откатываем %s', ', '.join(real_targets))
         if sequence:
-            logger.warning('Также будут откачены %s', ', '.join(sequence))
+            logger.warning(u'Также будут откачены %s', ', '.join(sequence))
         if self._proceed():
             self._make_downgrades(sequence + list(real_targets))
         else:
