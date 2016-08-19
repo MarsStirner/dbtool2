@@ -71,7 +71,7 @@ class SetInitialBarcodeAndPeriodFromTTJ(DBToolBaseNode):
     @classmethod
     def upgrade(cls):
         with cls.connection as c:
-            c.execute(u'SELECT bardcode, period FROM TakenTissueJournal '
+            c.execute(u'SELECT barcode, period FROM TakenTissueJournal '
                       u'ORDER BY period DESC, barcode DESC LIMIT 1')
             res = c.fetchone()
             if res:
