@@ -9,7 +9,7 @@ query_add_autoclose_column = u'''
 ALTER TABLE `ActionType` ADD COLUMN `autoclose_on_event_close` BIT NOT NULL DEFAULT b'1'
 	COMMENT 'Автоматически закрывать экшены через N дней после закрытия ИБ' AFTER `hasPrescriptions`;
 '''
-query_set_default_autoclose_flag = u'''UPDATE `ActionType` SET `autoclose_on_event_close` = (`mnem` NOT IN ('LAB', 'BAK_LAB')); '''
+query_set_default_autoclose_flag = u'''UPDATE `ActionType` SET `autoclose_on_event_close` = (`mnem` IN ('EXAM', 'EPI', 'JOUR', 'ORD', 'NOT', 'OTH', 'DIAG', 'THER')); '''
 
 query_drop_autoclose_column = u'''ALTER TABLE `ActionType`	DROP COLUMN `autoclose_on_event_close`; '''
 
