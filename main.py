@@ -28,10 +28,10 @@ if __name__ == "__main__":
                             help='Don\'t execute modules updates, only record version change. Use with caution!')
     sp_upgrade.set_defaults(mode='upgrade')
 
-    # sp_downgrade = subparsers.add_parser('downgrade', help=u'Выполнить удаление обновлений БД')
-    # sp_downgrade.add_argument('targets', metavar='target', nargs='+',
-    #                           help='Удаляемые обновления')
-    # sp_downgrade.set_defaults(mode='downgrade')
+    sp_downgrade = subparsers.add_parser('downgrade', help=u'Выполнить удаление обновлений БД')
+    sp_downgrade.add_argument('targets', metavar='target', nargs='+',
+                               help='Удаляемые обновления')
+    sp_downgrade.set_defaults(mode='downgrade')
 
     sp_fix_definers = subparsers.add_parser('fix-definers', help=u'Починить DEFINER\'ов в БД')
     sp_fix_definers.set_defaults(mode='fix-definers')
