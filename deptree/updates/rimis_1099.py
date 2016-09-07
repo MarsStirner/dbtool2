@@ -14,18 +14,18 @@ ALTER TABLE `Diagnosis`
 CHANGE COLUMN `endDate` `endDate` DATETIME NULL DEFAULT NULL COMMENT 'Дата окончания заболевания' ;
 ''')
 
-            c.ececute(u'''
+            c.execute(u'''
 DROP TRIGGER IF EXISTS `afterDeleteDiagnostic` ;
 ''')
 
-            c.ececute(u'''
+            c.execute(u'''
 ALTER TABLE `Diagnosis`
 CHANGE COLUMN `diagnosisType_id` `diagnosisType_id` INT(11) NULL COMMENT 'Тип диагноза {rbDiagnosisType}' ,
 CHANGE COLUMN `MKB` `MKB` VARCHAR(8) NULL COMMENT 'Код по МКБ X (с пятым знаком)' ,
 CHANGE COLUMN `MKBEx` `MKBEx` VARCHAR(8) NULL COMMENT 'Вторая секция кода по МКБ X (с пятым знаком)' ;
 ''')
 
-            c.ececute(u'''
+            c.execute(u'''
 ALTER TABLE `Diagnostic`
 CHANGE COLUMN `event_id` `event_id` INT(11) NULL COMMENT 'Событие {Event}' ,
 CHANGE COLUMN `diagnosisType_id` `diagnosisType_id` INT(11) NULL DEFAULT NULL COMMENT 'Тип диагноза {rbDiagnosisType}' ,
