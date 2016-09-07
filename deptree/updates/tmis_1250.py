@@ -73,7 +73,7 @@ class CR(DBToolBaseNode):
 action_property_type_result = {
     'name':u'Ссылка на результат исследования',
     'descr':u'Ссылка на результат исследования',
-    'typeName':u'String',
+    'typeName':u'URL',
     'code':u'multivox_result',
     'sex':0,
     'age': '',
@@ -183,14 +183,18 @@ def modify_action_property_types(action_type_ids, c):
 
 query_insert_apt=u'''
 INSERT INTO ActionPropertyType(
-    `deleted`, `actionType_id`, `name`, `descr`, `typeName`,
+    `deleted`, `actionType_id`, `name`, `descr`, `typeName`, `valueDomain`,
     `defaultValue`, `code`, `norm`, `sex`, `age`, `mandatory`, `readOnly`,
     `createDatetime`, `modifyDatetime`
-) VALUES (0, {}, '{}', '{}', '{}',  '', '{}', '', {}, '{}', {}, {}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+) VALUES (
+    0, {}, '{}', '{}', '{}', '',
+    '', '{}', '', {}, '{}', {}, {},
+    CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+);
 '''
 query_update_apt=u'''
 UPDATE ActionPropertyType SET
-    `deleted` = 0, `actionType_id`= {}, `name`='{}', `descr`='{}', `typeName`='{}',
+    `deleted` = 0, `actionType_id`= {}, `name`='{}', `descr`='{}', `typeName`='{}', `valueDomain`='',
     `defaultValue`='', `code`='{}', `norm`='', `sex`={}, `age`='{}', `mandatory`={}, `readOnly`={},
     `modifyDatetime`= CURRENT_TIMESTAMP()
 WHERE id = {};
@@ -213,7 +217,7 @@ def modify_action_property_type(action_type_id, prop, c):
 
 
 query_update_apt_set_deleted_by_aty_ids_and_codes = u'''
-UPDATE ActionPropertyType SET deleted = 1 WHERE code ='{0}' AND actionType_id IN ({1})
+UPDATE ActionPropertyType SET `deleted` = 1, `modifyDatetime`= CURRENT_TIMESTAMP() WHERE code ='{0}' AND actionType_id IN ({1})
 '''
 
 def downgrade(root_action_type_title, c):
