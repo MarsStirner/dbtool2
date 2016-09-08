@@ -71,10 +71,21 @@ class CR(DBToolBaseNode):
 
 
 action_property_type_result = {
-    'name':u'Ссылка на результат исследования',
-    'descr':u'Ссылка на результат исследования',
+    'name':u'Ссылка на изображение',
+    'descr':u'Ссылка на изображение',
     'typeName':u'URL',
     'code':u'multivox_result',
+    'sex':0,
+    'age': '',
+    'mandatory':0,
+    'readOnly':1
+}
+
+action_property_type_result_app_link = {
+    'name':u'Открыть изображения в Multivox',
+    'descr':u'Открыть изображения в Multivox',
+    'typeName':u'URL',
+    'code':u'multivox_app_link',
     'sex':0,
     'age': '',
     'mandatory':0,
@@ -177,6 +188,7 @@ def find_leafs_recursive(group_id, level, c):
 def modify_action_property_types(action_type_ids, c):
     for action_type_id in action_type_ids:
         modify_action_property_type(action_type_id, action_property_type_result, c)
+        modify_action_property_type(action_type_id, action_property_type_result_app_link, c)
         modify_action_property_type(action_type_id, action_property_type_send_date, c)
         modify_action_property_type(action_type_id, action_property_type_send_time, c)
 
