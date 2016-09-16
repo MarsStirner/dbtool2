@@ -10,7 +10,9 @@ class UUIDFix(DBToolBaseNode):
     depends = ['tmis-1240.Action', 'tmis-1240.Client', 'tmis-1240.DrugChart',
                'tmis-1240.Event', 'tmis-1240.Organisation', 'tmis-1240.OrgStructure',
                'tmis-1240.Person', 'tmis-1240.Pharmacy', 'tmis-1240.PrescriptionSendingRes',
-               'tmis-1240.rbStorage']
+               'tmis-1240.rbStorage',
+               # fixes
+               'tmis-1297']
 
 
 class UUIDFixAction(DBToolBaseNode):
