@@ -22,13 +22,13 @@ class FixSomeIndexesAndFKsInActionAndEvent(DBToolBaseNode):
                 try:
                     c.execute(sql_drop_index.format('Event', idx))
                 except Exception, e:
-                    logger.warning(u'Не был удален {0} в Event: {1}'.format(idx, unicode(e.message)))
+                    logger.warning(u'Не был удален {0} в Event: {1}'.format(idx, unicode(e)))
 
             for fk in ('FK_Event_Event_LocalContract', 'Event_mesSpecification'):
                 try:
                     c.execute(sql_drop_fk.format('Event', fk))
                 except Exception, e:
-                    logger.warning(u'Не был удален {0} в Event: {1}'.format(fk, unicode(e.message)))
+                    logger.warning(u'Не был удален {0} в Event: {1}'.format(fk, unicode(e)))
 
             c.execute(u'''ALTER TABLE `Event`
 ADD INDEX `fk_event_client_idx` (`client_id` ASC)''')
@@ -52,13 +52,13 @@ ADD CONSTRAINT `fk_event_event_type`
                 try:
                     c.execute(sql_drop_index.format('Action', idx))
                 except Exception, e:
-                    logger.warning(u'Не был удален {0} в Action: {1}'.format(idx, unicode(e.message)))
+                    logger.warning(u'Не был удален {0} в Action: {1}'.format(idx, unicode(e)))
 
-            for fk in ('fk_coord_person', 'Event_mesSpecification', 'FK_Action_ActionType_id'):
+            for fk in ('fk_coord_person', 'FK_Action_ActionType_id'):
                 try:
                     c.execute(sql_drop_fk.format('Action', fk))
                 except Exception, e:
-                    logger.warning(u'Не был удален {0} в Action: {1}'.format(fk, unicode(e.message)))
+                    logger.warning(u'Не был удален {0} в Action: {1}'.format(fk, unicode(e)))
 
             c.execute(u'''ALTER TABLE `Action`
 ADD INDEX `fk_action_event_idx` (`event_id` ASC)''')
