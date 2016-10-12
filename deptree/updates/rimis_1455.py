@@ -78,8 +78,7 @@ class PersonCertificate(DBToolBaseNode):
                         start_date DATETIME,
                         end_date DATETIME,
                         cert_type_id INT(11),
-                        deleted INT(11),
-                        person_id INT(11)
+                        deleted INT(11)
                     );
             '''
                       )
