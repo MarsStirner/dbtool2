@@ -5,7 +5,10 @@ from . import (
     tmis_1297, tmis_1230, tmis_1245,
     webmis_494,
     common,
-    risar
+    risar,
+
+    # ideally you need to install only from releases
+    releases
 )
 
 __author__ = 'viruzzz-kun'
