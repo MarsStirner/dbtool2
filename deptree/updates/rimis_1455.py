@@ -126,6 +126,5 @@ class FillrbDoctorCertificateType(DBToolBaseNode):
                         ('physiotherapy', 'Физиотерапия'),
                         ('functional_diagnostics', 'Функциональная диагностика'),
                         ('surgery', 'Хирургия'),
-                        ('endocrinology', 'Эндокринология'),
-                        ('obstetrics_and_gynecology', 'Акушерство и гинекология')
+                        ('endocrinology', 'Эндокринология')
             ''')
