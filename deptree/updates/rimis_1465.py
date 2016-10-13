@@ -29,5 +29,5 @@ class MaternalCertificate(DBToolBaseNode):
                 issuing_LPU_id INT(11) COMMENT 'ЛПУ выдачи_справочник {Organisation}',
                 issuing_LPU_free_input VARCHAR(255) COMMENT 'ЛПУ выдачи_вручную',
                 event_id INT(11),
-                deleted INT(11) DEFAULT '0' NOT NULL );'''
+                deleted INT(11) DEFAULT '0');'''
             )
