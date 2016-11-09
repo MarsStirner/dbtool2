@@ -14,9 +14,42 @@ class Rimis1455(DBToolBaseNode):
         'rimis-1455.tblqual',
         'rimis-1455.pcert',
         'rimis-1455.fill-doc-qual',
-        'rimis-1455.fill-cert-type'
+        'rimis-1455.fill-cert-type',
+        'rimis-1455.foreign-keys'
     ]
 
+class ForeignKeys(DBToolBaseNode):
+    name = 'rimis-1455.foreign-keys'
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+            c.execute(u'''
+                ALTER TABLE `Person`
+                  ADD CONSTRAINT `fk_person_certificate`
+                  FOREIGN KEY (`cert_id` )
+                  REFERENCES `PersonCertificate` (`id` )
+                  ON DELETE NO ACTION
+                  ON UPDATE NO ACTION
+                , ADD INDEX `fk_person_certificate` (`cert_id` ASC) ;'''
+            )
+
+            c.execute(u'''
+                ALTER TABLE `Person`
+                  ADD CONSTRAINT `fk_doctorqualification`
+                  FOREIGN KEY (`qualification_id` )
+                  REFERENCES `rbDoctorQualification` (`id` )
+                  ON DELETE NO ACTION
+                  ON UPDATE NO ACTION
+                , ADD INDEX `fk_doctorqualification` (`qualification_id` ASC) ;''')
+
+            c.execute(u'''
+                ALTER TABLE `PersonCertificate`
+                  ADD CONSTRAINT `fk_rbdoctorcertificatetype`
+                  FOREIGN KEY (`cert_type_id` )
+                  REFERENCES `rbDoctorCertificateType` (`id` )
+                  ON DELETE NO ACTION
+                  ON UPDATE NO ACTION
+                , ADD INDEX `fk_rbdoctorcertificatetype` (`cert_type_id` ASC) ;''')
 
 class ColumnsQualificationCertificate(DBToolBaseNode):
     name = 'rimis-1455.person-columns'
@@ -27,8 +60,8 @@ class ColumnsQualificationCertificate(DBToolBaseNode):
             c.execute(u'''
               ALTER TABLE Person
               ADD COLUMN `qualification_id` INT(11) NULL   COMMENT 'Квалификация врача {PersonQualification}' AFTER `speciality_id`,
-              ADD COLUMN `cert_id` INT NULL   COMMENT 'Сертификат врача {PersonCertificate}' AFTER `qualification_id`;'''
-                      )
+              ADD COLUMN `cert_id` INT NULL   COMMENT 'Сертификат врача {PersonCertificate}' AFTER `qualification_id`;''')
+
 
 
 class rbDoctorCertificateType(DBToolBaseNode):
@@ -37,14 +70,12 @@ class rbDoctorCertificateType(DBToolBaseNode):
     @classmethod
     def upgrade(cls):
         with cls.connection as c:
-            c.execute(u'''
-                    CREATE TABLE rbDoctorCertificateType
-                    (
-                        id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                        code VARCHAR(255),
-                        name VARCHAR(255)
-                    );'''
-                      )
+            c.execute(u'''CREATE TABLE `rbDoctorCertificateType` (
+                          `id` int(11) NOT NULL AUTO_INCREMENT,
+                          `code` varchar(255) DEFAULT NULL,
+                          `name` varchar(255) DEFAULT NULL,
+                          PRIMARY KEY (`id`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;''')
 
 
 class rbDoctorQualification(DBToolBaseNode):
@@ -53,14 +84,13 @@ class rbDoctorQualification(DBToolBaseNode):
     @classmethod
     def upgrade(cls):
         with cls.connection as c:
-            c.execute(u'''
-                    CREATE TABLE rbDoctorQualification
-                        (
-                            id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                            code VARCHAR(255),
-                            name VARCHAR(255)
-                        );'''
-                      )
+            c.execute(u'''CREATE TABLE `rbDoctorQualification` (
+                      `id` int(11) NOT NULL AUTO_INCREMENT,
+                      `code` varchar(255) DEFAULT NULL,
+                      `name` varchar(255) DEFAULT NULL,
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;'''
+            )
 
 
 class PersonCertificate(DBToolBaseNode):
@@ -69,19 +99,17 @@ class PersonCertificate(DBToolBaseNode):
     @classmethod
     def upgrade(cls):
         with cls.connection as c:
-            c.execute(u'''
-                    CREATE TABLE PersonCertificate
-                    (
-                        id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                        number VARCHAR(16),
-                        created DATETIME,
-                        start_date DATETIME,
-                        end_date DATETIME,
-                        cert_type_id INT(11),
-                        deleted INT(11)
-                    );
-            '''
-                      )
+            c.execute(u'''CREATE TABLE `PersonCertificate` (
+                          `id` int(11) NOT NULL AUTO_INCREMENT,
+                          `number` varchar(16) DEFAULT NULL,
+                          `created` datetime DEFAULT NULL,
+                          `start_date` datetime DEFAULT NULL,
+                          `end_date` datetime DEFAULT NULL,
+                          `cert_type_id` int(11) DEFAULT NULL,
+                          `deleted` int(11) DEFAULT NULL,
+                          PRIMARY KEY (`id`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;'''
+            )
 
 
 class FillrbDoctorQualification(DBToolBaseNode):
@@ -126,5 +154,5 @@ class FillrbDoctorCertificateType(DBToolBaseNode):
                         ('physiotherapy', 'Физиотерапия'),
                         ('functional_diagnostics', 'Функциональная диагностика'),
                         ('surgery', 'Хирургия'),
-                        ('endocrinology', 'Эндокринология')
+                        ('endocrinology', 'Эндокринология');
             ''')
