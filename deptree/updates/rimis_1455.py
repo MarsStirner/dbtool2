@@ -156,3 +156,12 @@ class FillrbDoctorCertificateType(DBToolBaseNode):
                         ('surgery', 'Хирургия'),
                         ('endocrinology', 'Эндокринология');
             ''')
+
+
+class DropTablesBecauseofWrongEncoding(DBToolBaseNode):
+    name = "rimis-1455.drop-tables"
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+            c.execute(u'''DROP TABLE IF EXISTS rbDoctorCertificateType, rbDoctorQualification, PersonCertificate;''')
