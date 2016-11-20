@@ -4,14 +4,14 @@ from deptree. internals.base import DBToolBaseNode
 
 
 
-class CreateTable(DBToolBaseNode):
+class CreateTableEventPersonsControl(DBToolBaseNode):
     name = 'rimis-1693'
 
     @classmethod
     def upgrade(cls):
         with cls.connection as c:
             c.execute(u'''
-CREATE TABLE `Event_under_Persons_control` (
+CREATE TABLE `EventPersonsControl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `createDatetime` datetime NOT NULL COMMENT 'Дата создания записи',
   `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Отметка удаления записи',
@@ -20,8 +20,9 @@ CREATE TABLE `Event_under_Persons_control` (
   `begDate` datetime NOT NULL COMMENT 'Starting responsibility date',
   `endDate` datetime DEFAULT NULL COMMENT 'Disclaimer date',
   PRIMARY KEY (`id`),
-  KEY `event_id` (`event_id`),
-  KEY `person_id` (`person_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='Пациентки, взятые на контроль';
+  KEY `fk_eventpersonscontrol_event_idx` (`event_id`),
+  KEY `fk_eventpersonscontrol_person_idx` (`person_id`),
+  CONSTRAINT `fk_eventpersonscontrol_event` FOREIGN KEY (`event_id`) REFERENCES `Event` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_eventpersonscontrol_person` FOREIGN KEY (`person_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Обращения, взятые на контроль';
 ''')
-
