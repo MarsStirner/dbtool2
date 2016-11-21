@@ -6,8 +6,8 @@ from deptree.internals.base import DBToolBaseNode
 logger = logging.getLogger('dbtool')
 
 
-class rbDocumentTypeAlter(DBToolBaseNode):
-    name = 'genya_request.15-32'
+class rbDocumentTypeAlterRegCodeLen(DBToolBaseNode):
+    name = 'rimis-1717'
 
     @classmethod
     def upgrade(cls):
