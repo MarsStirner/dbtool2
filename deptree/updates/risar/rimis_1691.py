@@ -13,6 +13,6 @@ class RIMIS1691addcolumns(DBToolBaseNode):
     def upgrade(cls):
         with cls.connection as c:
             c.execute(u'''
-            ALTER TABLE `hospital1_risar`.`Event_Persons` ADD COLUMN `createDatetime` DATETIME NULL  AFTER `endDate` , ADD COLUMN `createPerson_id` INT(11) NOT NULL  AFTER `createDatetime` ;
+            ALTER TABLE `Event_Persons` ADD COLUMN `createDatetime` DATETIME NULL  AFTER `endDate` , ADD COLUMN `createPerson_id` INT(11) NOT NULL  AFTER `createDatetime` ;
 ''')
 
