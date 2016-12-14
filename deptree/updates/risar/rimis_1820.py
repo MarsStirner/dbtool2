@@ -74,7 +74,7 @@ BEGIN
         END IF;
 
         SELECT
-            o.TFOMScode, o.Departmentcode
+            o.LPUcode, o.Departmentcode
             INTO
             apnt_org_code, apnt_dep_code
         FROM Action a
@@ -85,7 +85,11 @@ BEGIN
 
         SET apnt_date_code = DATE_FORMAT(NEW.begDate, "%y%m%d");
 
-        SET apnt_number = CONCAT(apnt_org_code, apnt_dep_code, apnt_date_code, apnt_postfix);
+        SET apnt_number = CONCAT(
+            COALESCE(apnt_org_code, '000'),
+            COALESCE(apnt_dep_code, '000'),
+            apnt_date_code, apnt_postfix
+        );
 
         INSERT INTO `ActionNumbers`
             (`action_id`, `entity_type`, `number`, `prefix`, `postfix`, `date`)
