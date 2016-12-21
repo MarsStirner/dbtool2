@@ -84,14 +84,16 @@ BEGIN
         END IF;
 
         SELECT
-            o.LPUcode, o.Departmentcode
+            o.TFOMSCode, os.TFOMSCode
             INTO
             apnt_org_code, apnt_dep_code
         FROM Action a
             JOIN Event e ON a.event_id = e.id
             JOIN Person p ON e.execPerson_id = p.id
             JOIN Organisation o ON p.org_id = o.id
-        WHERE a.id = NEW.id;
+            JOIN OrgStructure os ON o.id = os.organisation_id
+        WHERE a.id = NEW.id
+        LIMIT 1;
 
         SET apnt_date_code = DATE_FORMAT(NEW.begDate, "%y%m%d");
 
@@ -247,14 +249,16 @@ BEGIN
         END IF;
 
         SELECT
-            o.LPUcode, o.Departmentcode
+            o.TFOMSCode, os.TFOMSCode
             INTO
             apnt_org_code, apnt_dep_code
         FROM Action a
             JOIN Event e ON a.event_id = e.id
             JOIN Person p ON e.execPerson_id = p.id
             JOIN Organisation o ON p.org_id = o.id
-        WHERE a.id = NEW.id;
+            JOIN OrgStructure os ON o.id = os.organisation_id
+        WHERE a.id = NEW.id
+        LIMIT 1;
 
         SET apnt_date_code = DATE_FORMAT(NEW.begDate, "%y%m%d");
 
