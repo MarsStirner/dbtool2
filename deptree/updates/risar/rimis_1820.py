@@ -8,7 +8,7 @@ logger = logging.getLogger('dbtool')
 
 class HospAppointmentsTula(DBToolBaseNode):
     name = 'rimis-1820'
-    depends = ['rimis-1820.1', 'rimis-1820.2', 'rimis-1820.fix1']
+    depends = ['rimis-1820.1', 'rimis-1820.2', 'rimis-1820.fix1', 'rimis-1820.fix2']
 
 
 class ActionNumbersCommon(DBToolBaseNode):
@@ -259,6 +259,145 @@ BEGIN
             JOIN OrgStructure os ON o.id = os.organisation_id
         WHERE a.id = NEW.id
         LIMIT 1;
+
+        SET apnt_date_code = DATE_FORMAT(NEW.begDate, "%y%m%d");
+
+        SET apnt_number = CONCAT(
+            COALESCE(apnt_org_code, '000'),
+            COALESCE(apnt_dep_code, '000'),
+            apnt_date_code, apnt_postfix
+        );
+
+        INSERT INTO `ActionNumbers`
+            (`action_id`, `numberType_id`, `number`, `prefix`, `postfix`, `date`)
+        VALUES
+            (NEW.id, number_type_id, apnt_number,
+             CAST(apnt_prefix as CHAR(32)),
+             CAST(apnt_postfix as CHAR(32)),
+             DATE(NEW.begDate));
+
+    END IF;
+END'''.format(cls.config['definer']))
+
+
+class TulaHospApntNumbersActionTriggerEdit2(DBToolBaseNode):
+    name = 'rimis-1820.fix2'
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+            c.execute(u'DROP TRIGGER IF EXISTS onInsertAction')
+
+            c.execute(u'''
+CREATE DEFINER={0} TRIGGER `Action_BEFORE_INSERT` BEFORE INSERT ON `Action` FOR EACH ROW
+BEGIN
+    DECLARE apnt_dep_code VARCHAR(50);
+
+    DECLARE flatCode VARCHAR(64);
+    SELECT `ActionType`.`flatCode` INTO flatCode FROM `ActionType` WHERE `ActionType`.`id` = NEW.`actionType_id`;
+
+    IF flatCode = "tula_hosp" THEN
+        SELECT
+            IF(`OrgStructure`.id IS NOT NULL, COALESCE(`OrgStructure`.TFOMScode, "000"), NULL) INTO apnt_dep_code
+        FROM Action
+            INNER JOIN (
+                SELECT max(`Action`.id) AS action_id, `Action`.event_id AS event_id
+                FROM `Action`
+                    INNER JOIN (
+                        SELECT max(`Action`.`begDate`) AS max_beg_date, `Event`.id AS event_id
+                        FROM `Action` INNER JOIN `Event` ON `Event`.id = `Action`.event_id
+                        INNER JOIN `ActionType` ON `ActionType`.id = `Action`.`actionType_id`
+                        WHERE `Event`.deleted = 0 AND `Action`.deleted = 0 AND `ActionType`.`flatCode` IN ("risarFirstInspection", "risarSecondInspection", "risarPCCheckUp", "risarPuerperaCheckUp", "gynecological_visit_general_checkUp") AND `Action`.`endDate` IS NULL
+                        GROUP BY `Event`.id
+                    ) AS `MaxActionBegDates` ON `MaxActionBegDates`.max_beg_date = `Action`.`begDate` AND `MaxActionBegDates`.event_id = `Action`.event_id
+                    INNER JOIN `ActionType` ON `Action`.actionType_id = `ActionType`.id
+                WHERE `Action`.deleted = 0 AND `ActionType`.`flatCode` IN ("risarFirstInspection", "risarSecondInspection", "risarPCCheckUp", "risarPuerperaCheckUp", "gynecological_visit_general_checkUp") AND `Action`.`endDate` IS NULL
+                GROUP BY `Action`.event_id
+            ) AS `EventLatestCheckups` ON `EventLatestCheckups`.action_id = `Action`.id
+            INNER JOIN `ActionProperty` ON `Action`.id = `ActionProperty`.action_id
+            INNER JOIN `ActionPropertyType` ON `ActionPropertyType`.id = `ActionProperty`.type_id
+            INNER JOIN `ActionProperty_OrgStructure` ON `ActionProperty`.id = `ActionProperty_OrgStructure`.id
+            INNER JOIN `OrgStructure` ON `ActionProperty_OrgStructure`.value = `OrgStructure`.id
+        WHERE Action.event_id = NEW.event_id AND `ActionPropertyType`.code = "department";
+        IF (apnt_dep_code IS NULL) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Невозможно создать направление - не выбрано отделение в осмотре врача';
+        END IF;
+
+    END IF;
+END'''.format(cls.config['definer']))
+
+            c.execute(u'''
+CREATE DEFINER={0} TRIGGER `Action_AFTER_INSERT` AFTER INSERT ON `Action` FOR EACH ROW
+BEGIN
+    DECLARE apnt_postfix INT(11);
+    DECLARE apnt_prefix INT(11);
+    DECLARE apnt_org_code VARCHAR(50);
+    DECLARE apnt_dep_code VARCHAR(50);
+    DECLARE apnt_date_code VARCHAR(8);
+    DECLARE apnt_number VARCHAR(191);
+    DECLARE number_type_id INT(11);
+
+    DECLARE flatCode VARCHAR(64);
+    SELECT `ActionType`.`flatCode` INTO flatCode FROM `ActionType` WHERE `ActionType`.`id` = NEW.`actionType_id`;
+
+    IF flatCode = "tula_hosp" THEN
+        SELECT
+            rbActionNumberType.id INTO number_type_id
+        FROM rbActionNumberType
+            JOIN rbActionNumberKind ON rbActionNumberType.kind_id = rbActionNumberKind.id
+        WHERE rbActionNumberType.code = "71" AND rbActionNumberKind.code = "hosp_appointment" LIMIT 1;
+
+        SELECT
+            CAST(prefix as UNSIGNED), CAST(postfix as UNSIGNED)
+            INTO
+            apnt_prefix, apnt_postfix
+        FROM ActionNumbers
+        WHERE date = DATE(NEW.begDate) AND numberType_id = number_type_id
+        ORDER BY prefix DESC, postfix DESC LIMIT 1 FOR UPDATE;
+        IF apnt_postfix IS NULL THEN
+            SET apnt_postfix = 900;
+            SET apnt_prefix = 0;
+        ELSE
+            SET apnt_postfix = apnt_postfix + 1;
+            IF apnt_postfix > 999 THEN
+                SET apnt_prefix = apnt_prefix + 1;
+                SET apnt_postfix = 900;
+            END IF;
+        END IF;
+
+        SELECT
+            o.TFOMSCode INTO apnt_org_code
+        FROM Action a
+            JOIN Event e ON a.event_id = e.id
+            JOIN Person p ON e.execPerson_id = p.id
+            JOIN Organisation o ON p.org_id = o.id
+        WHERE a.id = NEW.id;
+
+        SELECT
+            IF(`OrgStructure`.id IS NOT NULL, COALESCE(`OrgStructure`.TFOMScode, "000"), NULL) INTO apnt_dep_code
+        FROM Action
+            INNER JOIN (
+                SELECT max(`Action`.id) AS action_id, `Action`.event_id AS event_id
+                FROM `Action`
+                    INNER JOIN (
+                        SELECT max(`Action`.`begDate`) AS max_beg_date, `Event`.id AS event_id
+                        FROM `Action` INNER JOIN `Event` ON `Event`.id = `Action`.event_id
+                        INNER JOIN `ActionType` ON `ActionType`.id = `Action`.`actionType_id`
+                        WHERE `Event`.deleted = 0 AND `Action`.deleted = 0 AND `ActionType`.`flatCode` IN ("risarFirstInspection", "risarSecondInspection", "risarPCCheckUp", "risarPuerperaCheckUp", "gynecological_visit_general_checkUp") AND `Action`.`endDate` IS NULL
+                        GROUP BY `Event`.id
+                    ) AS `MaxActionBegDates` ON `MaxActionBegDates`.max_beg_date = `Action`.`begDate` AND `MaxActionBegDates`.event_id = `Action`.event_id
+                    INNER JOIN `ActionType` ON `Action`.actionType_id = `ActionType`.id
+                WHERE `Action`.deleted = 0 AND `ActionType`.`flatCode` IN ("risarFirstInspection", "risarSecondInspection", "risarPCCheckUp", "risarPuerperaCheckUp", "gynecological_visit_general_checkUp") AND `Action`.`endDate` IS NULL
+                GROUP BY `Action`.event_id
+            ) AS `EventLatestCheckups` ON `EventLatestCheckups`.action_id = `Action`.id
+            INNER JOIN `ActionProperty` ON `Action`.id = `ActionProperty`.action_id
+            INNER JOIN `ActionPropertyType` ON `ActionPropertyType`.id = `ActionProperty`.type_id
+            INNER JOIN `ActionProperty_OrgStructure` ON `ActionProperty`.id = `ActionProperty_OrgStructure`.id
+            INNER JOIN `OrgStructure` ON `ActionProperty_OrgStructure`.value = `OrgStructure`.id
+        WHERE Action.event_id = NEW.event_id AND `ActionPropertyType`.code = "department";
+        IF (apnt_dep_code IS NULL) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Невозможно создать направление - не выбрано отделение в осмотре врача';
+        END IF;
 
         SET apnt_date_code = DATE_FORMAT(NEW.begDate, "%y%m%d");
 
