@@ -20,7 +20,7 @@ ADD COLUMN `age` VARCHAR(9) NULL DEFAULT '' COMMENT 'Применимо для �
 ADD COLUMN `sex` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Применимо для указанного пола (0-любой, 1-М, 2-Ж)' AFTER `age`;
 ''')
 
-            c.ececute(u'''
+            c.execute(u'''
 CREATE TABLE `ExpertProtocol_ActionType` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `protocol_id` int(11) NOT NULL COMMENT '{ExpertProtocol}',
