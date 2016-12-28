@@ -8,6 +8,7 @@ logger = logging.getLogger('dbtool')
 
 class RIMIS785_rbRadzinskyRiskRate(DBToolBaseNode):
     name = 'rimis-785'
+    depends = ['rimis-682']
 
     @classmethod
     def upgrade(cls):
