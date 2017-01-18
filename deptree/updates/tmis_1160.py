@@ -16,6 +16,8 @@ class Action_TTJ_ForeignKeys(DBToolBaseNode):
             c.execute(u'''
 ALTER TABLE `Action_TakenTissueJournal`
 ADD INDEX `fk_action_ttj_action_idx` (`action_id` ASC);
+''')
+            c.execute(u'''
 ALTER TABLE `Action_TakenTissueJournal`
 ADD CONSTRAINT `fk_action_ttj_action`
   FOREIGN KEY (`action_id`)
@@ -26,6 +28,8 @@ ADD CONSTRAINT `fk_action_ttj_action`
             c.execute(u'''
 ALTER TABLE `Action_TakenTissueJournal`
 ADD INDEX `fk_action_ttj_ttj_idx` (`takenTissueJournal_id` ASC);
+''')
+            c.execute(u'''
 ALTER TABLE `Action_TakenTissueJournal`
 ADD CONSTRAINT `fk_action_ttj_ttj`
   FOREIGN KEY (`takenTissueJournal_id`)
