@@ -19,92 +19,89 @@ class RefbooksRegionCodeChange(DBToolBaseNode):
         with cls.connection as c:
             c.execute(u"""
 ALTER TABLE `Organisation`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `OrgStructure`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `Person`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbAcheResult`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbDocumentType`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbEventProfile`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbFinance`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbJobType`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbMedicalAidProfile`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbMedicalAidUnit`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbMesSpecification`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbNomenclature`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbPolicyType`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbPost`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbRelationType`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbSocStatusType`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbResult`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbSpeciality`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `rbTempInvalidReason`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
 ALTER TABLE `ActionPropertyTemplate`
-CHANGE COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '';
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
 
 
 class RefbooksRegionCodeAdd(DBToolBaseNode):
     name = 'rimis-1854.add'
-    """
-    ALTER TABLE `rbPost`
-	CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(9) NOT NULL DEFAULT '' COMMENT 'Региональный код' AFTER `name`;
-	"""
+
     @classmethod
     def upgrade(cls):
         with cls.connection as c:
