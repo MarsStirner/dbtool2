@@ -8,7 +8,10 @@ logger = logging.getLogger('dbtool')
 
 class RefbooksTableRegionCode(DBToolBaseNode):
     name = 'rimis-1854'
-    depends = ['rimis-1717', 'rimis-1844', 'rimis-1852', 'rimis-1711', 'rimis-1854.add', 'rimis-1854.change', 'rimis-1854.datamigrate']
+    depends = ['rimis-1717', 'rimis-1844', 'rimis-1852', 'rimis-1711', 'rimis-1854.add',
+               'rimis-1854.change', 'rimis-1854.datamigrate'
+                # , 'rimis-1854.datamigrate2'  # сделано вручную аналитиком
+               ]
 
 
 class RefbooksRegionCodeChange(DBToolBaseNode):
@@ -38,10 +41,6 @@ ALTER TABLE `rbDocumentType`
 CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
-ALTER TABLE `rbEventProfile`
-CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
-""")
-            c.execute(u"""
 ALTER TABLE `rbFinance`
 CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
@@ -54,15 +53,7 @@ ALTER TABLE `rbMedicalAidProfile`
 CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
-ALTER TABLE `rbMedicalAidUnit`
-CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
-""")
-            c.execute(u"""
 ALTER TABLE `rbMesSpecification`
-CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
-""")
-            c.execute(u"""
-ALTER TABLE `rbNomenclature`
 CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
@@ -90,11 +81,25 @@ ALTER TABLE `rbSpeciality`
 CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
-ALTER TABLE `rbTempInvalidReason`
+ALTER TABLE `ActionPropertyTemplate`
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
+""")
+
+# эти таблицы используются только в печати
+            c.execute(u"""
+ALTER TABLE `rbEventProfile`
 CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
             c.execute(u"""
-ALTER TABLE `ActionPropertyTemplate`
+ALTER TABLE `rbMedicalAidUnit`
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
+""")
+            c.execute(u"""
+ALTER TABLE `rbNomenclature`
+CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
+""")
+            c.execute(u"""
+ALTER TABLE `rbTempInvalidReason`
 CHANGE COLUMN `regionalCode` `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код';
 """)
 
@@ -189,9 +194,9 @@ UPDATE `rbBloodType` t set t.regionalCode = t.code WHERE t.code > '';
 UPDATE `rbSocStatusClass` t set t.regionalCode = t.code WHERE t.code > '';
 """)
 
-            c.execute(u"""
-UPDATE `rbAcheResult` t set t.regionalCode = t.code WHERE t.code > '';
-""")
+#             c.execute(u"""
+# UPDATE `rbAcheResult` t set t.regionalCode = t.code WHERE t.code > '';
+# """)
             c.execute(u"""
 UPDATE `rbDiseaseCharacter` t set t.regionalCode = t.code WHERE t.code > '';
 """)
@@ -219,9 +224,9 @@ UPDATE `rbProfMedHelp` t set t.regionalCode = t.code WHERE t.code > '';
             c.execute(u"""
 UPDATE `rbConditionMedHelp` t set t.regionalCode = t.code WHERE t.code > '';
 """)
-            c.execute(u"""
-UPDATE `rbFinance` t set t.regionalCode = t.code WHERE t.code > '';
-""")
+#             c.execute(u"""
+# UPDATE `rbFinance` t set t.regionalCode = t.code WHERE t.code > '';
+# """)
             c.execute(u"""
 UPDATE `rbMeasureStatus` t set t.regionalCode = t.code WHERE t.code > '';
 """)
@@ -230,4 +235,58 @@ UPDATE `MKB` t set t.regionalCode = t.DiagID WHERE t.DiagID > '';
 """)
             c.execute(u"""
 UPDATE `Measure` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+
+
+class RefbooksTableMigrate2Code(DBToolBaseNode):
+    name = 'rimis-1854.datamigrate2'
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+
+            c.execute(u"""
+UPDATE `rbDocumentType` t set t.regionalCode = t.TFOMSCode WHERE t.TFOMSCode > '';
+""")
+            c.execute(u"""
+UPDATE `rbEventProfile` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbJobType` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbMedicalAidProfile` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbMedicalAidUnit` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbMesSpecification` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbNomenclature` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbPolicyType` t set t.regionalCode = t.TFOMSCode WHERE t.TFOMSCode > '';
+""")
+            c.execute(u"""
+UPDATE `rbPost` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbRelationType` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbSocStatusType` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbResult` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbSpeciality` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbTempInvalidReason` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `ActionPropertyTemplate` t set t.regionalCode = t.code WHERE t.code > '';
 """)
