@@ -8,7 +8,7 @@ logger = logging.getLogger('dbtool')
 
 class RefbooksTableRegionCode(DBToolBaseNode):
     name = 'rimis-1854'
-    depends = ['rimis-1711', 'rimis-1854.add', 'rimis-1854.change', 'rimis-1854.datamigrate']
+    depends = ['rimis-1717', 'rimis-1844', 'rimis-1852', 'rimis-1711', 'rimis-1854.add', 'rimis-1854.change', 'rimis-1854.datamigrate']
 
 
 class RefbooksRegionCodeChange(DBToolBaseNode):
