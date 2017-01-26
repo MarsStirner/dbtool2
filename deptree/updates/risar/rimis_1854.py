@@ -9,9 +9,8 @@ logger = logging.getLogger('dbtool')
 class RefbooksTableRegionCode(DBToolBaseNode):
     name = 'rimis-1854'
     depends = ['rimis-1717', 'rimis-1844', 'rimis-1852', 'rimis-1711', 'rimis-1854.add',
-               'rimis-1854.change', 'rimis-1854.datamigrate'
-                # , 'rimis-1854.datamigrate2'  # сделано вручную аналитиком
-               ]
+               'rimis-1854.change', 'rimis-1854.datamigrate', 'rimis-1854.datamigrate2',
+               'rimis-1854.add2']
 
 
 class RefbooksRegionCodeChange(DBToolBaseNode):
@@ -177,6 +176,18 @@ ADD COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'регион�
 
             c.execute(u"""
 ALTER TABLE `Measure`
+ADD COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код' AFTER `templateAction_id`;
+""")
+
+
+class RefbooksRegionCodeAdd2(DBToolBaseNode):
+    name = 'rimis-1854.add2'
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+            c.execute(u"""
+ALTER TABLE `rbTraumaType`
 ADD COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код' AFTER `templateAction_id`;
 """)
 
