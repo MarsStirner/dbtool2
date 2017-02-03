@@ -188,7 +188,7 @@ class RefbooksRegionCodeAdd2(DBToolBaseNode):
         with cls.connection as c:
             c.execute(u"""
 ALTER TABLE `rbTraumaType`
-ADD COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код' AFTER `templateAction_id`;
+ADD COLUMN `regionalCode` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'региональный код' AFTER `name`;
 """)
 
 
