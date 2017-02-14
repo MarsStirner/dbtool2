@@ -9,5 +9,6 @@ class RemoveNonNullProperty(DBToolBaseNode):
     def upgrade(cls):
         with cls.connection as c:
             c.execute(u'''
-                ALTER TABLE `ClientAllergy` MODIFY COLUMN `power` int;
+                ALTER TABLE `ClientAllergy`
+                CHANGE COLUMN `power` `power` INT(11) NULL ;
             ''')
