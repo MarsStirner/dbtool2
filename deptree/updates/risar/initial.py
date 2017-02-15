@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from deptree. internals.base import DBToolBaseNode
+from deptree.internals.base import DBToolBaseNode
 
 
 # ignore: RIMIS-650; RIMIS-406; RIMIS-863; RIMIS-646; RIMIS-992; RMIS-822; RIMIS-1095

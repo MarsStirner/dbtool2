@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from deptree. internals.base import DBToolBaseNode
+from deptree.internals.base import DBToolBaseNode
 
 
 class EventMeasureCancelReason(DBToolBaseNode):
