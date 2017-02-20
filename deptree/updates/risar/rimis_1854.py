@@ -10,7 +10,7 @@ class RefbooksTableRegionCode(DBToolBaseNode):
     name = 'rimis-1854'
     depends = ['rimis-1717', 'rimis-1844', 'rimis-1852', 'rimis-1711', 'rimis-1854.add',
                'rimis-1854.change', 'rimis-1854.datamigrate', 'rimis-1854.datamigrate2',
-               'rimis-1854.add2']
+               'rimis-1854.add2', 'rimis-1854.datamigrate3']
 
 
 class RefbooksRegionCodeChange(DBToolBaseNode):
@@ -300,4 +300,22 @@ UPDATE `rbTempInvalidReason` t set t.regionalCode = t.code WHERE t.code > '';
 """)
             c.execute(u"""
 UPDATE `ActionPropertyTemplate` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+
+
+class RefbooksTableMigrate3Code(DBToolBaseNode):
+    name = 'rimis-1854.datamigrate3'
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+
+            c.execute(u"""
+UPDATE `rbAcheResult` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbFinance` t set t.regionalCode = t.code WHERE t.code > '';
+""")
+            c.execute(u"""
+UPDATE `rbReserveType` t set t.regionalCode = t.code WHERE t.code > '';
 """)
