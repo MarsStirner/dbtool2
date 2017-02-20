@@ -12,3 +12,7 @@ class RemoveNonNullProperty(DBToolBaseNode):
                 ALTER TABLE `ClientAllergy`
                 CHANGE COLUMN `power` `power` INT(11) NULL ;
             ''')
+            c.execute(u'''
+                ALTER TABLE `ClientIntoleranceMedicament`
+                CHANGE COLUMN `power` `power` INT(11) NULL COMMENT 'Степень непереносимости' ;
+            ''')
