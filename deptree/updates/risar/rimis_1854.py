@@ -10,7 +10,12 @@ class RefbooksTableRegionCode(DBToolBaseNode):
     name = 'rimis-1854'
     depends = ['rimis-1717', 'rimis-1844', 'rimis-1852', 'rimis-1711', 'rimis-1854.add',
                'rimis-1854.change', 'rimis-1854.datamigrate', 'rimis-1854.datamigrate2',
-               'rimis-1854.add2', 'rimis-1854.datamigrate3']
+               'rimis-1854.add2']
+
+
+class RefbooksTableRegionCode2(DBToolBaseNode):
+    name = 'rimis-1854-2'
+    depends = ['rimis-1854', 'rimis-1854.datamigrate3']
 
 
 class RefbooksRegionCodeChange(DBToolBaseNode):
