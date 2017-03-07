@@ -5,7 +5,8 @@ from deptree.internals.base import DBToolBaseNode
 
 class RegionalRisksTambov(DBToolBaseNode):
     name = 'rimis-1885'
-    depends = ['rimis-1885.regional_common', 'rimis-1885.new_factors_from_tomsk', 'rimis-1885.regional_tomsk']
+    depends = ['rimis-1885.regional_common', 'rimis-1885.new_factors_from_tomsk', 'rimis-1885.regional_tomsk',
+               'rimis-1885.diags_mkb_details_content', 'rimis-1885.diags_mkb_details']
 
 
 class RegionalRisksCommonTables(DBToolBaseNode):
@@ -180,37 +181,37 @@ class RegionalRisksTomsk(DBToolBaseNode):
     @classmethod
     def upgrade(cls):
         with cls.connection as c:
-#             rrr_data = [
-#                 ('low', 'Низкая', '1'),
-#                 ('medium', 'Средняя', '2'),
-#                 ('high', 'Высокая', '3')
-#             ]
-#             c.executemany(u'''
-# INSERT INTO `rbRisarRegionalRiskRate` (`code`, `name`, `value`) VALUES (%s, %s, %s);
-# ''', rrr_data)
-#
-#             rs_data = [
-#                 ('initial', 'Факторы при постановке на учет'),
-#                 ('before21', 'Факторы в 20 недель'),
-#                 ('from21to30', 'Факторы в 30 недель'),
-#                 ('from31to36', 'Факторы в 36 недель')
-#             ]
-#             c.executemany(u'''
-# INSERT INTO `rbRegionalRiskStage` (`code`,`name`) VALUES (%s, %s);
-# ''', rs_data)
+            rrr_data = [
+                ('low', 'Низкая', '1'),
+                ('medium', 'Средняя', '2'),
+                ('high', 'Высокая', '3')
+            ]
+            c.executemany(u'''
+INSERT INTO `rbRisarRegionalRiskRate` (`code`, `name`, `value`) VALUES (%s, %s, %s);
+''', rrr_data)
+
+            rs_data = [
+                ('initial', 'Факторы при постановке на учет'),
+                ('before21', 'Факторы в 20 недель'),
+                ('from21to30', 'Факторы в 30 недель'),
+                ('from31to36', 'Факторы в 36 недель')
+            ]
+            c.executemany(u'''
+INSERT INTO `rbRegionalRiskStage` (`code`,`name`) VALUES (%s, %s);
+''', rs_data)
 
             # update regional_group_id
-#             c.execute(u'''
-# CREATE TABLE `rbRadzRiskFactor` (
-#   `id` int(11) NOT NULL AUTO_INCREMENT,
-#   `code` varchar(64) NOT NULL,
-#   `name` varchar(512) NOT NULL,
-#   `group_id` int(11) NOT NULL COMMENT '{rbRadzRiskFactorGroup}',
-#   PRIMARY KEY (`id`),
-#   KEY `fk_rbradzriskfactor_group_idx` (`group_id`),
-#   CONSTRAINT `fk_rbradzriskfactor_group` FOREIGN KEY (`group_id`) REFERENCES `rbRadzRiskFactorGroup` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-# ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Фактор риска по Радзинскому';
-# ''')
+            c.execute(u'''
+CREATE TABLE `rbRadzRiskFactor` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(64) NOT NULL,
+  `name` varchar(512) NOT NULL,
+  `group_id` int(11) NOT NULL COMMENT '{rbRadzRiskFactorGroup}',
+  PRIMARY KEY (`id`),
+  KEY `fk_rbradzriskfactor_group_idx` (`group_id`),
+  CONSTRAINT `fk_rbradzriskfactor_group` FOREIGN KEY (`group_id`) REFERENCES `rbRadzRiskFactorGroup` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Фактор риска по Радзинскому';
+''')
 
             # update regional groups in factors
             sql_update_factor_groups = u'''\
@@ -437,40 +438,94 @@ INSERT IGNORE INTO rbRadzRiskFactor_RegionalStage (factor_id, stage_id, points)
             ))
 
             # region risks tables
-#             c.execute(u'''
-# CREATE TABLE `RisarTomskRegionalRisks` (
-#   `id` int(11) NOT NULL AUTO_INCREMENT,
-#   `createDatetime` datetime NOT NULL,
-#   `createPerson_id` int(11) DEFAULT NULL,
-#   `modifyDatetime` datetime NOT NULL,
-#   `modifyPerson_id` int(11) DEFAULT NULL,
-#   `event_id` int(11) NOT NULL,
-#   `initial_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов факторов при постановке на учет',
-#   `before21week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов до 21 недели',
-#   `from21to30week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов с 21 по 30 неделю',
-#   `from31to36week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов с 31 по 36 неделю',
-#   PRIMARY KEY (`id`),
-#   KEY `fk_risartomskregrisks_event_idx` (`event_id`),
-#   KEY `fk_risartomskregrisks_createperson_idx` (`createPerson_id`),
-#   KEY `fk_risartomskregrisks_modifyperson_idx` (`modifyPerson_id`),
-#   CONSTRAINT `fk_risartomskregrisks_createperson` FOREIGN KEY (`createPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
-#   CONSTRAINT `fk_risartomskregrisks_event` FOREIGN KEY (`event_id`) REFERENCES `Event` (`id`) ON UPDATE CASCADE,
-#   CONSTRAINT `fk_risartomskregrisks_modifyperson` FOREIGN KEY (`modifyPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
-# ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Рассчитанные риски по региональной шкале для случая';
-# ''')
-#
-#             c.execute(u'''
-# CREATE TABLE `RisarTomskRegionalRisks_Factors` (
-#   `id` int(11) NOT NULL AUTO_INCREMENT,
-#   `risk_id` int(11) NOT NULL COMMENT '{RisarTomskRegionalRisks}',
-#   `risk_factor_id` int(11) NOT NULL COMMENT '{rbRadzRiskFactor}',
-#   `stage_id` int(11) NOT NULL COMMENT '{rbRegionalRiskStage}',
-#   PRIMARY KEY (`id`),
-#   KEY `fk_risartomskregrisks_factors_risk_idx` (`risk_id`),
-#   KEY `fk_risartomskregrisks_factors_factor_code_idx` (`risk_factor_id`),
-#   KEY `fk_risartomskregrisks_factors_stage_idx` (`stage_id`),
-#   CONSTRAINT `fk_risartomskregrisks_factors_factor` FOREIGN KEY (`risk_factor_id`) REFERENCES `rbRadzRiskFactor` (`id`) ON UPDATE CASCADE,
-#   CONSTRAINT `fk_risartomskregrisks_factors_risk` FOREIGN KEY (`risk_id`) REFERENCES `RisarTomskRegionalRisks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-#   CONSTRAINT `fk_risartomskregrisks_factors_stage` FOREIGN KEY (`stage_id`) REFERENCES `rbRegionalRiskStage` (`id`) ON UPDATE CASCADE
-# ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Сработавшие факторы риска по региональной шкале для случая';
-# ''')
+            c.execute(u'''
+CREATE TABLE `RisarTomskRegionalRisks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `createDatetime` datetime NOT NULL,
+  `createPerson_id` int(11) DEFAULT NULL,
+  `modifyDatetime` datetime NOT NULL,
+  `modifyPerson_id` int(11) DEFAULT NULL,
+  `event_id` int(11) NOT NULL,
+  `initial_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов факторов при постановке на учет',
+  `before21week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов до 21 недели',
+  `from21to30week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов с 21 по 30 неделю',
+  `from31to36week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов с 31 по 36 неделю',
+  PRIMARY KEY (`id`),
+  KEY `fk_risartomskregrisks_event_idx` (`event_id`),
+  KEY `fk_risartomskregrisks_createperson_idx` (`createPerson_id`),
+  KEY `fk_risartomskregrisks_modifyperson_idx` (`modifyPerson_id`),
+  CONSTRAINT `fk_risartomskregrisks_createperson` FOREIGN KEY (`createPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_event` FOREIGN KEY (`event_id`) REFERENCES `Event` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_modifyperson` FOREIGN KEY (`modifyPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Рассчитанные риски по региональной шкале для случая';
+''')
+
+            c.execute(u'''
+CREATE TABLE `RisarTomskRegionalRisks_Factors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `risk_id` int(11) NOT NULL COMMENT '{RisarTomskRegionalRisks}',
+  `risk_factor_id` int(11) NOT NULL COMMENT '{rbRadzRiskFactor}',
+  `stage_id` int(11) NOT NULL COMMENT '{rbRegionalRiskStage}',
+  PRIMARY KEY (`id`),
+  KEY `fk_risartomskregrisks_factors_risk_idx` (`risk_id`),
+  KEY `fk_risartomskregrisks_factors_factor_code_idx` (`risk_factor_id`),
+  KEY `fk_risartomskregrisks_factors_stage_idx` (`stage_id`),
+  CONSTRAINT `fk_risartomskregrisks_factors_factor` FOREIGN KEY (`risk_factor_id`) REFERENCES `rbRadzRiskFactor` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_factors_risk` FOREIGN KEY (`risk_id`) REFERENCES `RisarTomskRegionalRisks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_factors_stage` FOREIGN KEY (`stage_id`) REFERENCES `rbRegionalRiskStage` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Сработавшие факторы риска по региональной шкале для случая';
+''')
+
+
+class DiagsMKBDetails(DBToolBaseNode):
+    name = 'rimis-1885.diags_mkb_details'
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+            c.execute(u'''
+CREATE TABLE `MKB_details` (
+  `mkb_id` int(11) NOT NULL COMMENT '{MKB}',
+  `refbookName` varchar(255) NOT NULL COMMENT 'название справочника из Vesta',
+  `refbookText` varchar(255) DEFAULT '' COMMENT 'Описание справочника для лейбла',
+  PRIMARY KEY (`mkb_id`),
+  CONSTRAINT `fk_mkb_details_mkb` FOREIGN KEY (`mkb_id`) REFERENCES `MKB` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Уточнение МКБ значением из привязанного справочника';
+''')
+
+            c.execute(u'''ALTER TABLE `Diagnostic`
+ADD COLUMN `mkb_details_code` VARCHAR(250) NULL DEFAULT NULL COMMENT 'Код из привязанного к МКБ справочника уточнения (см. MKB_details)' AFTER `MKB2`''')
+
+
+class DiagsMKBDetailsContent(DBToolBaseNode):
+    name = 'rimis-1885.diags_mkb_details_content'
+    depends = ['rimis-1885.diags_mkb_details']
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+            details_data = [
+                ('O40%', 'rbRisarHydramnionStage', u'Уточнение МКБ'),
+                ('O41.0%', 'rbRisarOligohydramnionStage', u'Уточнение МКБ'),
+                ('I11%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
+                ('I12%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
+                ('I13%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
+                ('I14%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
+                ('I15%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
+                ('O10%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
+                ('O11%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
+                ('O44.0', 'rbRisarPlacentalPresentationStage', u'Уточнение МКБ'),
+                ('O44.1', 'rbRisarPlacentalPresentationStage', u'Уточнение МКБ'),
+                ('O43.8', 'rbRisarPlacentalPerfusionDisorderStage', u'Уточнение МКБ'),
+                ('O43.9', 'rbRisarPlacentalPerfusionDisorderStage', u'Уточнение МКБ'),
+            ]
+            sql_insert = u'''INSERT IGNORE INTO `MKB_details` (`mkb_id`, `refbookName`, `refbookText`) {unions}'''
+            c.execute(sql_insert.format(
+                unions=u' UNION '.join(
+                    u'SELECT MKB.id, "{1}", "{2}" '
+                    u'FROM MKB '
+                    u'WHERE MKB.DiagID LIKE "{0}" AND deleted = 0 '
+                    .format(mkb_like, rb_name, rb_text)
+                    for mkb_like, rb_name, rb_text in details_data
+                )
+            ))
