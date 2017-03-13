@@ -3,7 +3,7 @@
 from deptree.internals.base import DBToolBaseNode
 
 
-class RegionalRisksTambov(DBToolBaseNode):
+class RegionalRisksTomskScale(DBToolBaseNode):
     name = 'rimis-1885'
     depends = ['rimis-1885.regional_common', 'rimis-1885.new_factors_from_tomsk', 'rimis-1885.regional_tomsk',
                'rimis-1885.diags_mkb_details_content', 'rimis-1885.diags_mkb_details']
@@ -175,7 +175,7 @@ VALUES (%s, %s);
 
 
 class RegionalRisksTomsk(DBToolBaseNode):
-    name = 'rimis-1885.regional_tomsk'
+    name = 'rimis-1885.regional_tomsk'  # Region specific
     depends = ['rimis-1885.regional_common', 'rimis-1885.new_factors_from_tomsk']
 
     @classmethod
@@ -199,19 +199,6 @@ INSERT INTO `rbRisarRegionalRiskRate` (`code`, `name`, `value`) VALUES (%s, %s, 
             c.executemany(u'''
 INSERT INTO `rbRegionalRiskStage` (`code`,`name`) VALUES (%s, %s);
 ''', rs_data)
-
-            # update regional_group_id
-            c.execute(u'''
-CREATE TABLE `rbRadzRiskFactor` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(64) NOT NULL,
-  `name` varchar(512) NOT NULL,
-  `group_id` int(11) NOT NULL COMMENT '{rbRadzRiskFactorGroup}',
-  PRIMARY KEY (`id`),
-  KEY `fk_rbradzriskfactor_group_idx` (`group_id`),
-  CONSTRAINT `fk_rbradzriskfactor_group` FOREIGN KEY (`group_id`) REFERENCES `rbRadzRiskFactorGroup` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Фактор риска по Радзинскому';
-''')
 
             # update regional groups in factors
             sql_update_factor_groups = u'''\
