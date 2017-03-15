@@ -10,6 +10,7 @@ class RadzinskyRisksScaleUpdate1(DBToolBaseNode):
 
 class RadzRiskFactorAddColDeleted(DBToolBaseNode):
     name = 'rimis-2093.radz_and_regional_factor_deletion'
+    depends = ['rimis-1885.regional_common']
 
     @classmethod
     def upgrade(cls):
