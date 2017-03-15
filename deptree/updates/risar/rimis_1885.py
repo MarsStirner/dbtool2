@@ -4,7 +4,7 @@ from deptree.internals.base import DBToolBaseNode
 
 
 class RegionalRisksTomskScale(DBToolBaseNode):
-    name = 'rimis-1885'
+    name = 'rimis-1885'  # Region Tomsk
     depends = ['rimis-1885.regional_common', 'rimis-1885.new_factors_from_tomsk', 'rimis-1885.regional_tomsk',
                'rimis-1885.diags_mkb_details_content', 'rimis-1885.diags_mkb_details']
 
@@ -69,6 +69,11 @@ ADD CONSTRAINT `fk_rbradzriskfactor_regional_group`
   FOREIGN KEY (`regional_group_id`)
   REFERENCES `rbRadzRiskFactorGroup` (`id`)
   ON UPDATE CASCADE ON DELETE RESTRICT;
+''')
+
+            c.execute(u'''
+ALTER TABLE `rbRadzRiskFactorGroup`
+ADD UNIQUE INDEX `unique_code_idx` (`code` ASC);
 ''')
 
             # regional factor stage
@@ -156,21 +161,30 @@ class RegionalNewFactorsFromTomsk(DBToolBaseNode):
                 ("placental_perfusion_disorder_2", u"Нарушение маточно-плацентарного кровотока II степени"),
                 ("placental_perfusion_disorder_3", u"Нарушение маточно-плацентарного кровотока III степени"),
                 ("pelvic_station_common", u"Тазовое предлежание плода"),
+                ("preeclampsia_moderate", u"Преэклампсия умеренная"),
+                ("preeclampsia_hard", u"Преэклампсия тяжелая"),
+                ("vegetovascular_dystonia", u"Вегето-сосудистая дистония"),
+                ("adrenopathy", u"Эндокринопатии: заболевания надпочечников"),
+                ("persistent_infection", u"Хронические специфические инфекции (ВИЧ, гепатит, туберкулез, бруцеллез, токсоплазмоз и др.)"),
             ]
             c.executemany(u'''
-INSERT INTO `rbRadzRiskFactor` (`code`, `name`)
+INSERT IGNORE INTO `rbRadzRiskFactor` (`code`, `name`)
 VALUES (%s, %s);
 ''', rrf_data)
 
-            # some renames
+            # # some renames
             sql_rename = u'''UPDATE rbRadzRiskFactor SET name = %s WHERE code = %s '''
             for code, name in (
-                    ('hypertensive_disease_1', u'хроническая артериальная гипертензия I стадии'),
-                    ('hypertensive_disease_2', u'хроническая артериальная гипертензия II стадии'),
-                    ('hypertensive_disease_3', u'хроническая артериальная гипертензия III стадии'),
+                    ('hypertensive_disease_1', u'Хроническая артериальная гипертензия I стадии'),
+                    ('hypertensive_disease_2', u'Хроническая артериальная гипертензия II стадии'),
+                    ('hypertensive_disease_3', u'Хроническая артериальная гипертензия III стадии'),
                     ('small_gestational_age_fetus_1', u'Задержка внутриутробного роста плода 1 степени'),
                     ('small_gestational_age_fetus_2', u'Задержка внутриутробного роста плода 2 степени'),
-                    ('small_gestational_age_fetus_3', u'Задержка внутриутробного роста плода 3 степени')):
+                    ('small_gestational_age_fetus_3', u'Задержка внутриутробного роста плода 3 степени'),
+                    ('thrombosis', u'Тромбозы, тромбоэмболии и тромбофлебиты в анамнезе и при настоящей беременности'),
+                    ('glomerulonephritis', u'Гломерулонефрит'),
+                    ('solitary_paired', u'Единственная почка'),
+                    ('renal_disease', u'Заболевания почек до беременности'), ):
                 c.execute(sql_rename, (name, code))
 
 
@@ -492,19 +506,19 @@ class DiagsMKBDetailsContent(DBToolBaseNode):
     def upgrade(cls):
         with cls.connection as c:
             details_data = [
-                ('O40%', 'rbRisarHydramnionStage', u'Уточнение МКБ'),
-                ('O41.0%', 'rbRisarOligohydramnionStage', u'Уточнение МКБ'),
-                ('I11%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
-                ('I12%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
-                ('I13%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
-                ('I14%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
-                ('I15%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
-                ('O10%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
-                ('O11%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение МКБ'),
-                ('O44.0', 'rbRisarPlacentalPresentationStage', u'Уточнение МКБ'),
-                ('O44.1', 'rbRisarPlacentalPresentationStage', u'Уточнение МКБ'),
-                ('O43.8', 'rbRisarPlacentalPerfusionDisorderStage', u'Уточнение МКБ'),
-                ('O43.9', 'rbRisarPlacentalPerfusionDisorderStage', u'Уточнение МКБ'),
+                ('O40%', 'rbRisarHydramnionStage', u'Уточнение степени'),
+                ('O41.0%', 'rbRisarOligohydramnionStage', u'Уточнение степени'),
+                ('I11%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение стадии'),
+                ('I12%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение стадии'),
+                ('I13%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение стадии'),
+                ('I14%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение стадии'),
+                ('I15%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение стадии'),
+                ('O10%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение стадии'),
+                ('O11%', 'rbRisarHypertensiveDiseaseStage', u'Уточнение стадии'),
+                ('O44.0', 'rbRisarPlacentalPresentationStage', u'Уточнение вида предлежания'),
+                ('O44.1', 'rbRisarPlacentalPresentationStage', u'Уточнение вида предлежания'),
+                ('O43.8', 'rbRisarPlacentalPerfusionDisorderStage', u'Уточнение степени'),
+                ('O43.9', 'rbRisarPlacentalPerfusionDisorderStage', u'Уточнение степени'),
             ]
             sql_insert = u'''INSERT IGNORE INTO `MKB_details` (`mkb_id`, `refbookName`, `refbookText`) {unions}'''
             c.execute(sql_insert.format(
