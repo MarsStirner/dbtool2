@@ -6,6 +6,7 @@ from deptree.internals.base import DBToolBaseNode
 class RegionalRisksTomskScale(DBToolBaseNode):
     name = 'rimis-1885'  # Region Tomsk
     depends = ['rimis-1885.regional_common', 'rimis-1885.new_factors_from_tomsk', 'rimis-1885.regional_tomsk',
+               'rimis-1885.tomsk_scale_factor_changes1',
                'rimis-1885.diags_mkb_details_content', 'rimis-1885.diags_mkb_details']
 
 
@@ -190,7 +191,7 @@ VALUES (%s, %s);
 
 class RegionalRisksTomsk(DBToolBaseNode):
     name = 'rimis-1885.regional_tomsk'  # Region specific
-    depends = ['rimis-1885.regional_common', 'rimis-1885.new_factors_from_tomsk']
+    depends = ['rimis-1885.regional_common']
 
     @classmethod
     def upgrade(cls):
@@ -214,6 +215,53 @@ INSERT INTO `rbRisarRegionalRiskRate` (`code`, `name`, `value`) VALUES (%s, %s, 
 INSERT INTO `rbRegionalRiskStage` (`code`,`name`) VALUES (%s, %s);
 ''', rs_data)
 
+            # region risks tables
+            c.execute(u'''
+CREATE TABLE `RisarTomskRegionalRisks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `createDatetime` datetime NOT NULL,
+  `createPerson_id` int(11) DEFAULT NULL,
+  `modifyDatetime` datetime NOT NULL,
+  `modifyPerson_id` int(11) DEFAULT NULL,
+  `event_id` int(11) NOT NULL,
+  `initial_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов факторов при постановке на учет',
+  `before21week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов до 21 недели',
+  `from21to30week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов с 21 по 30 неделю',
+  `from31to36week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов с 31 по 36 неделю',
+  PRIMARY KEY (`id`),
+  KEY `fk_risartomskregrisks_event_idx` (`event_id`),
+  KEY `fk_risartomskregrisks_createperson_idx` (`createPerson_id`),
+  KEY `fk_risartomskregrisks_modifyperson_idx` (`modifyPerson_id`),
+  CONSTRAINT `fk_risartomskregrisks_createperson` FOREIGN KEY (`createPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_event` FOREIGN KEY (`event_id`) REFERENCES `Event` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_modifyperson` FOREIGN KEY (`modifyPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Рассчитанные риски по региональной шкале для случая';
+''')
+
+            c.execute(u'''
+CREATE TABLE `RisarTomskRegionalRisks_Factors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `risk_id` int(11) NOT NULL COMMENT '{RisarTomskRegionalRisks}',
+  `risk_factor_id` int(11) NOT NULL COMMENT '{rbRadzRiskFactor}',
+  `stage_id` int(11) NOT NULL COMMENT '{rbRegionalRiskStage}',
+  PRIMARY KEY (`id`),
+  KEY `fk_risartomskregrisks_factors_risk_idx` (`risk_id`),
+  KEY `fk_risartomskregrisks_factors_factor_code_idx` (`risk_factor_id`),
+  KEY `fk_risartomskregrisks_factors_stage_idx` (`stage_id`),
+  CONSTRAINT `fk_risartomskregrisks_factors_factor` FOREIGN KEY (`risk_factor_id`) REFERENCES `rbRadzRiskFactor` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_factors_risk` FOREIGN KEY (`risk_id`) REFERENCES `RisarTomskRegionalRisks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_factors_stage` FOREIGN KEY (`stage_id`) REFERENCES `rbRegionalRiskStage` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Сработавшие факторы риска по региональной шкале для случая';
+''')
+
+
+class TomskScaleFactorChanges(DBToolBaseNode):
+    name = 'rimis-1885.tomsk_scale_factor_changes1'  # Region specific
+    depends = ['rimis-1885.new_factors_from_tomsk']
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
             # update regional groups in factors
             sql_update_factor_groups = u'''\
 UPDATE rbRadzRiskFactor, rbRadzRiskFactorGroup
@@ -437,45 +485,6 @@ INSERT IGNORE INTO rbRadzRiskFactor_RegionalStage (factor_id, stage_id, points)
                     for stage_code in stage_list
                 )
             ))
-
-            # region risks tables
-            c.execute(u'''
-CREATE TABLE `RisarTomskRegionalRisks` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `createDatetime` datetime NOT NULL,
-  `createPerson_id` int(11) DEFAULT NULL,
-  `modifyDatetime` datetime NOT NULL,
-  `modifyPerson_id` int(11) DEFAULT NULL,
-  `event_id` int(11) NOT NULL,
-  `initial_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов факторов при постановке на учет',
-  `before21week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов до 21 недели',
-  `from21to30week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов с 21 по 30 неделю',
-  `from31to36week_points` int(11) DEFAULT NULL COMMENT 'Сумма баллов с 31 по 36 неделю',
-  PRIMARY KEY (`id`),
-  KEY `fk_risartomskregrisks_event_idx` (`event_id`),
-  KEY `fk_risartomskregrisks_createperson_idx` (`createPerson_id`),
-  KEY `fk_risartomskregrisks_modifyperson_idx` (`modifyPerson_id`),
-  CONSTRAINT `fk_risartomskregrisks_createperson` FOREIGN KEY (`createPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `fk_risartomskregrisks_event` FOREIGN KEY (`event_id`) REFERENCES `Event` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `fk_risartomskregrisks_modifyperson` FOREIGN KEY (`modifyPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Рассчитанные риски по региональной шкале для случая';
-''')
-
-            c.execute(u'''
-CREATE TABLE `RisarTomskRegionalRisks_Factors` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `risk_id` int(11) NOT NULL COMMENT '{RisarTomskRegionalRisks}',
-  `risk_factor_id` int(11) NOT NULL COMMENT '{rbRadzRiskFactor}',
-  `stage_id` int(11) NOT NULL COMMENT '{rbRegionalRiskStage}',
-  PRIMARY KEY (`id`),
-  KEY `fk_risartomskregrisks_factors_risk_idx` (`risk_id`),
-  KEY `fk_risartomskregrisks_factors_factor_code_idx` (`risk_factor_id`),
-  KEY `fk_risartomskregrisks_factors_stage_idx` (`stage_id`),
-  CONSTRAINT `fk_risartomskregrisks_factors_factor` FOREIGN KEY (`risk_factor_id`) REFERENCES `rbRadzRiskFactor` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `fk_risartomskregrisks_factors_risk` FOREIGN KEY (`risk_id`) REFERENCES `RisarTomskRegionalRisks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_risartomskregrisks_factors_stage` FOREIGN KEY (`stage_id`) REFERENCES `rbRegionalRiskStage` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Сработавшие факторы риска по региональной шкале для случая';
-''')
 
 
 class DiagsMKBDetails(DBToolBaseNode):
