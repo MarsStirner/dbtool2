@@ -8,5 +8,5 @@ from deptree.internals.base import DBToolBaseNode
 class TomskRisar_v2_4(DBToolBaseNode):
     name = 'risar-v2.4.tomsk'
     depends = [
-        'rimis-1885',
+        'rimis-1885', 'rimis-2190',
     ]
