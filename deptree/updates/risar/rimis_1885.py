@@ -234,7 +234,7 @@ CREATE TABLE `RisarTomskRegionalRisks` (
   KEY `fk_risartomskregrisks_modifyperson_idx` (`modifyPerson_id`),
   CONSTRAINT `fk_risartomskregrisks_createperson` FOREIGN KEY (`createPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `fk_risartomskregrisks_event` FOREIGN KEY (`event_id`) REFERENCES `Event` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `fk_risartomskregrisks_modifyperson` FOREIGN KEY (`modifyPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `fk_risartomskregrisks_modifyperson` FOREIGN KEY (`modifyPerson_id`) REFERENCES `Person` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Рассчитанные риски по региональной шкале для случая';
 ''')
 
