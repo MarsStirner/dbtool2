@@ -8,7 +8,8 @@ from deptree.internals.base import DBToolBaseNode
 class ClientDocumentUpdate(DBToolBaseNode):
     name = 'tmis-1430'
     depends = ['tmis-1430.client_document_add_country', 'tmis-1430.client_document_fill_country',
-               'tmis-1430.client_document_add_region', 'tmis-1430.client_document_fill_region', ]
+               'tmis-1430.client_document_add_region', 'tmis-1430.client_document_fill_region',
+               'tmis-1430.client_document_add_country_region']
 
 
 class ClientDocumentAddCountry(DBToolBaseNode):
@@ -83,3 +84,16 @@ class ClientDocumentFillRegion(DBToolBaseNode):
                 c.executemany(u'''
 INSERT INTO `rbRegion` (`code`,`name`,`idx`,`country_id`) VALUES (%s, %s, %s, %s);
 ''', data)
+
+
+class ClientDocumentAddCountryRegion(DBToolBaseNode):
+    name = 'tmis-1430.client_document_add_country_region'
+
+    @classmethod
+    def upgrade(cls):
+        with cls.connection as c:
+            c.execute(u'''
+ALTER TABLE `ClientDocument`
+    ADD COLUMN `country_id` INT(11) NULL DEFAULT NULL COMMENT 'Страна выдачи документа {rbCountry}',
+    ADD COLUMN `region_id` INT(11) NULL DEFAULT NULL COMMENT 'Регион выдачи документа {rbRegion}';
+''')
