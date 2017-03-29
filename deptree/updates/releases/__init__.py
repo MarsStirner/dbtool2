@@ -1,1 +1,1 @@
-from . import risar, fnkc
+from . import risar, fnkc, gnc
