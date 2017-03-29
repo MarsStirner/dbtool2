@@ -53,7 +53,7 @@ class ClientDocumentAddRegion(DBToolBaseNode):
             c.execute(u'''
 CREATE TABLE `rbRegion` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(8) NOT NULL COMMENT 'Код',
+  `code` varchar(16) NOT NULL COMMENT 'Код',
   `name` varchar(64) NOT NULL COMMENT 'Название',
   `country_id` int(11) NOT NULL COMMENT 'Страна {rbCountry}',
   `idx` int(11) NOT NULL DEFAULT '0' COMMENT 'Индекс для сортировки в списке',
