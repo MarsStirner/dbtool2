@@ -21,6 +21,7 @@ class CreaterbSymbolGroup(DBToolBaseNode):
         with cls.connection as c:
             c.execute(u'''CREATE TABLE IF NOT EXISTS `rbSymbolGroup` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(512) NOT NULL DEFAULT '' COMMENT 'Код группы',
   `name` varchar(512) NOT NULL DEFAULT '' COMMENT 'Название символа',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COMMENT='Название групп символов';
@@ -48,7 +49,7 @@ class InsertSymbolGroup(DBToolBaseNode):
     @classmethod
     def upgrade(cls):
         with cls.connection as c:
-            c.execute(u'''INSERT INTO rbSymbolGroup (name) VALUES ('Математические операторы'), ('Греческий алфавит');''')
+            c.execute(u'''INSERT INTO rbSymbolGroup (code, name) VALUES ('math', 'Математические операторы'), ('greek', 'Греческий алфавит');''')
 
 
 class InsertSymbol(DBToolBaseNode):
