@@ -24,7 +24,7 @@ class CreaterbSymbolGroup(DBToolBaseNode):
   `code` varchar(512) NOT NULL DEFAULT '' COMMENT 'Код группы',
   `name` varchar(512) NOT NULL DEFAULT '' COMMENT 'Название символа',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COMMENT='Название групп символов';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Название групп символов';
 ''')
 
 class CreaterbSymbol(DBToolBaseNode):
@@ -40,7 +40,7 @@ class CreaterbSymbol(DBToolBaseNode):
   PRIMARY KEY (`id`),
 
   KEY `rbSymbol_rbSymbolGroup_group_fk` (`group_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COMMENT='Список символом для вставки в текстовые поля';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Список символом для вставки в текстовые поля';
 ''')
 
 class InsertSymbolGroup(DBToolBaseNode):
@@ -451,10 +451,4 @@ class InsertSymbol(DBToolBaseNode):
  ('03FE', 'Греческий заглавный символ сигма в виде полумесяца с точкой', 2),
  ('03FF', 'Греческий заглавный перевёрнутый символ сигма в виде полумесяца с точкой', 2);
 ''')
-
-
-
-
-
-
 
