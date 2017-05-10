@@ -9,5 +9,6 @@ class Risar_v2_4_next(DBToolBaseNode):
     name = None  # 'risar-v2.4.'
     depends = [
         'risar-v2.4.45',
+        'rimis-2201',
 
     ]
