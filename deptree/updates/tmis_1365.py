@@ -8,7 +8,6 @@ logger = logging.getLogger('dbtool')
 
 class PrintTemplateCETable(DBToolBaseNode):
     name = 'tmis-1365'
-    depends = ['tmis-1365']
 
     @classmethod
     def upgrade(cls):
