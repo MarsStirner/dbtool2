@@ -5,6 +5,7 @@ from deptree.internals.base import DBToolBaseNode
 
 class AddTableActionFileAttach(DBToolBaseNode):
     name = 'rimis-1472'
+    depends = ['rimis-1011.1']
 
     @classmethod
     def upgrade(cls):
