@@ -6,6 +6,7 @@ from deptree.internals.base import DBToolBaseNode
 
 class Main(DBToolBaseNode):
     name = 'tmis-1487'
+    depends = ['tmis-1487.add_short_name']
 
 
 class AddColumnOrgStructure(DBToolBaseNode):
