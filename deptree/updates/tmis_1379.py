@@ -4,7 +4,7 @@
 from deptree.internals.base import DBToolBaseNode
 
 
-class Main(DBToolBaseNode):
+class ActionFilesAttachesAddTable(DBToolBaseNode):
     name = 'tmis-1379'
     depends = ['rimis-1472', 'tmis-1379.add_atp_field']
 
