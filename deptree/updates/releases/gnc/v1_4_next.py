@@ -9,5 +9,5 @@ class MisGnc_v1_4_next(DBToolBaseNode):
     name = 'mis-v1.4.next'
     depends = [
         'mis-v1.4.48',
-
+        'tmis-1189'
     ]
